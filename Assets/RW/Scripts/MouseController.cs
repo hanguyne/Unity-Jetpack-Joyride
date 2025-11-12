@@ -39,6 +39,7 @@ public class MouseController : MonoBehaviour
         isGrounded = Physics2D.OverlapCircle(groundCheckTransform.position, 0.1f, groundCheckLayerMask);
         //2
         mouseAnimator.SetBool("isGround", isGrounded);
+        Debug.Log("Is Grounded: " + isGrounded); 
     }
 
     void FixedUpdate() 

@@ -544,8 +544,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   availableRooms:
   - {fileID: 8692084786244788519, guid: ec8eee30ab56d5946a554d60aff59103, type: 3}
-  - {fileID: 8692084786244788519, guid: ec8eee30ab56d5946a554d60aff59103, type: 3}
-  currentRooms: []
+  currentRooms:
+  - {fileID: 8999537923304760838}
 --- !u!95 &1742414395
 Animator:
   serializedVersion: 7
@@ -5493,6 +5493,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ec8eee30ab56d5946a554d60aff59103, type: 3}
+--- !u!1 &8999537923304760838 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8692084786244788519, guid: ec8eee30ab56d5946a554d60aff59103, type: 3}
+  m_PrefabInstance: {fileID: 8999537923304760837}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
