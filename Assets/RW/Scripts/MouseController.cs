@@ -1,4 +1,7 @@
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+
 
 public class MouseController : MonoBehaviour
 {
@@ -9,6 +12,26 @@ public class MouseController : MonoBehaviour
     public LayerMask groundCheckLayerMask;
     private Animator mouseAnimator;
     public ParticleSystem jetpack;
+    private bool isDead = false;
+    private uint coins = 0;
+    public Text coinsCollectedLabel;
+    public Button restartButton;
+    public AudioClip coinCollectSound;
+    public AudioSource jetpackAudio;
+    public AudioSource footstepsAudio;
+    public ParallaxScroll parallax;
+
+
+
+    void CollectCoin(Collider2D coinCollider)
+    {
+        coins++;
+        coinsCollectedLabel.text = coins.ToString();
+        Destroy(coinCollider.gameObject);
+        AudioSource.PlayClipAtPoint(coinCollectSound, transform.position);
+
+    }
+
 
     void AdjustJetpack(bool jetpackActive)
     {
@@ -24,6 +47,51 @@ public class MouseController : MonoBehaviour
             jetpackEmission.rateOverTime = 75.0f;
         }
     }
+
+    void OnTriggerEnter2D(Collider2D collider)
+    {
+        if (collider.gameObject.CompareTag("Coins"))
+        {
+            CollectCoin(collider);
+        }
+        else
+        {
+            HitByLaser(collider);
+        }
+
+    }
+    void AdjustFootstepsAndJetpackSound(bool jetpackActive)
+    {
+        footstepsAudio.enabled = !isDead && isGrounded;
+        jetpackAudio.enabled = !isDead && !isGrounded;
+        if (jetpackActive)
+        {
+            jetpackAudio.volume = 1.0f;
+        }
+        else
+        {
+            jetpackAudio.volume = 0.5f;
+        }
+    }
+
+
+    void HitByLaser(Collider2D laserCollider)
+    {
+        if (!isDead)
+        {
+            AudioSource laserZap = laserCollider.gameObject.GetComponent<AudioSource>();
+            laserZap.Play();
+        }
+
+        isDead = true;
+        mouseAnimator.SetBool("isDead", true);
+
+    }
+    public void RestartGame()
+    {
+        SceneManager.LoadScene("RocketMouse");
+    }
+
 
 
     private Rigidbody2D playerRigidbody;
@@ -42,21 +110,36 @@ public class MouseController : MonoBehaviour
         Debug.Log("Is Grounded: " + isGrounded); 
     }
 
-    void FixedUpdate() 
-{
-    bool jetpackActive = Input.GetButton("Fire1");
+    void FixedUpdate()
+    {
+        bool jetpackActive = Input.GetButton("Fire1");
+        jetpackActive = jetpackActive && !isDead;
+
         if (jetpackActive)
         {
             playerRigidbody.AddForce(new Vector2(0, jetpackForce));
         }
-    Vector2 newVelocity = playerRigidbody.linearVelocity;
-    newVelocity.x = forwardMovementSpeed;
-        playerRigidbody.linearVelocity = newVelocity;
+
+        if (!isDead)
+        {
+            Vector2 newVelocity = playerRigidbody.linearVelocity;
+            newVelocity.x = forwardMovementSpeed;
+            playerRigidbody.linearVelocity = newVelocity;
+        }
+
+        UpdateGroundedStatus();
         AdjustJetpack(jetpackActive);
-    UpdateGroundedStatus();
+        if (isDead && isGrounded)
+        {
+            restartButton.gameObject.SetActive(true);
+        }
+        AdjustFootstepsAndJetpackSound(jetpackActive);
+        parallax.offset = transform.position.x;
 
 
+
+    }
+        
 
 }
 
-}
